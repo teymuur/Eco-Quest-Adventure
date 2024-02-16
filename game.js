@@ -1,57 +1,116 @@
 // game.js
 
-// Get the canvas element
-const canvas = document.createElement('canvas');
-document.body.appendChild(canvas);
-const ctx = canvas.getContext('2d');
-
-// Set canvas dimensions
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// Load game assets (replace these URLs with your own image URLs)
-const backgroundImg = new Image();
-backgroundImg.src = 'background-image-url.jpg';
-
-const playerImg = new Image();
-playerImg.src = 'player-image-url.png';
-
-// Game state
-const player = {
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    width: 50,
-    height: 50,
-    speed: 5
+var config = {
+    type: Phaser.AUTO,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 300 },
+            debug: false
+        }
+    }
 };
 
-// Handle player input
-window.addEventListener('keydown', handleKeyPress);
+var player;
+var cursors;
+var trees;
+var garbage;
+var score = 0;
+var scoreText;
 
-function handleKeyPress(event) {
-    // Add logic to handle player input (e.g., arrow keys)
+var game = new Phaser.Game(config);
+
+function preload() {
+    this.load.image('background', 'background-image-url.jpg');
+    this.load.image('player', 'player-image-url.png');
+    this.load.image('tree', 'tree-image-url.png');
+    this.load.image('garbage', 'garbage-image-url.png');
 }
 
-// Update game state
+function create() {
+    // Background
+    this.add.image(0, 0, 'background').setOrigin(0);
+
+    // Player
+    player = this.physics.add.sprite(100, 450, 'player').setScale(0.5);
+    player.setCollideWorldBounds(true);
+
+    // Trees
+    trees = this.physics.add.group({
+        key: 'tree',
+        repeat: 5,
+        setXY: { x: 100, y: 0, stepX: 150 }
+    });
+
+    // Garbage
+    garbage = this.physics.add.group({
+        key: 'garbage',
+        repeat: 5,
+        setXY: { x: 300, y: 0, stepX: 150 }
+    });
+
+    // Score text
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
+
+    // Input
+    cursors = this.input.keyboard.createCursorKeys();
+
+    // On-screen controls for mobile
+    createOnscreenControls(this);
+}
+
 function update() {
-    // Add game logic to update player position, check collisions, etc.
+    // Player movement
+    if (cursors.left.isDown) {
+        player.setVelocityX(-160);
+    } else if (cursors.right.isDown) {
+        player.setVelocityX(160);
+    } else {
+        player.setVelocityX(0);
+    }
+
+    // Tree collection
+    this.physics.add.overlap(player, trees, collectTree, null, this);
+
+    // Garbage collection
+    this.physics.add.overlap(player, garbage, collectGarbage, null, this);
 }
 
-// Render game elements
-function render() {
-    // Draw background
-    ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-
-    // Draw player
-    ctx.drawImage(playerImg, player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
+function collectTree(player, tree) {
+    tree.disableBody(true, true);
+    score += 10;
+    updateScoreText();
 }
 
-// Game loop
-function gameLoop() {
-    update();
-    render();
-    requestAnimationFrame(gameLoop);
+function collectGarbage(player, garbageItem) {
+    garbageItem.disableBody(true, true);
+    score -= 5; // Penalty for collecting garbage
+    updateScoreText();
 }
 
-// Start the game loop
-gameLoop();
+function updateScoreText() {
+    scoreText.setText('Score: ' + score);
+}
+
+function createOnscreenControls(scene) {
+    // Left button
+    scene.add.image(50, window.innerHeight - 70, 'button').setInteractive().on('pointerdown', function () {
+        cursors.left.isDown = true;
+    }).on('pointerup', function () {
+        cursors.left.isDown = false;
+    });
+
+    // Right button
+    scene.add.image(150, window.innerHeight - 70, 'button').setInteractive().on('pointerdown', function () {
+        cursors.right.isDown = true;
+    }).on('pointerup', function () {
+        cursors.right.isDown = false;
+    });
+}
