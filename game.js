@@ -81,31 +81,36 @@ const config = {
     // Create score text
     const scoreText = this.add.bitmapText(10, 10, 'pixelFont', 'Score: 0', 16);
   
-    // Create menu scene (optional)
-    const menuScene = this.scene.add('menu', {
-      create: () => {
-        const titleText = this.add.bitmapText(400, 300, 'pixelFont', 'Eco-Quest Adventure', 32);
-        titleText.setOrigin(0.5);
-        const playButton = this.add.image(400, 400, 'button');
-        playButton.setOrigin(0.5);
-        playButton.setInteractive();
-        playButton.on('pointerdown', () => {
-          this.scene.start('main');
-        });
-      }
-    });
-  
-    // Start menu scene (optional)
-    this.scene.start('menu');
-  
     // Define keyboard controls
     const cursors = this.input.keyboard.createCursorKeys();
   
     // Track collected trash and score
     let collectedTrash = 0;
+}
   
     // Update function
-    this.scoreText
-
-
-}
+    this.update = function () {
+        // Player movement
+        const speed = 100;
+      
+        // Move left
+        if (cursors.left.isDown) {
+          player.setVelocityX(-speed);
+          player.anims.play('left', true);
+        } else if (cursors.right.isDown) {
+          player.setVelocityX(speed);
+          player.anims.play('right', true);
+        } else {
+          player.setVelocityX(0);
+          player.anims.play('turn', true);
+        }
+      
+        // Player jump (optional)
+        if (cursors.up.isDown && player.body.onGround()) {
+          player.setVelocityY(-300);
+        }
+      
+        // Collision detection with trash
+        this.physics.arcade.overlap(player, trash, collectTrash, null, this);
+      };
+      
