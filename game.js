@@ -2,63 +2,110 @@ const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+    backgroundColor: '#fff',
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { y: 200 }
+      }
+    },
     scene: {
-        preload: function () {
-            this.load.image('player', 'player.png');
-            this.load.image('garbage', 'garbage.png');
-            this.load.image('tree', 'tree.png');
-        },
-        create: function () {
-            let player = this.physics.add.sprite(400, 300, 'player');
-            this.physics.add.collider(player);
-            this.input.keyboard.createCursorKeys();
-            
-            let garbageGroup = this.physics.add.group({
-                key: 'garbage',
-                repeat: 10,
-                setXY: { x: 50, y: 0, stepX: 70 }
-            });
-            this.physics.add.collider(garbageGroup);
-            this.physics.add.overlap(player, garbageGroup, function (player, garbage) {
-                garbage.disableBody(true, true);
-                // Update player score
-            }, null, this);
-
-            let treeGroup = this.physics.add.group({
-                key: 'tree',
-                repeat: 5,
-                setXY: { x: 200, y: 200, stepX: 120 }
-            });
-            this.physics.add.collider(treeGroup);
-            this.physics.add.overlap(player, treeGroup, function (player, tree) {
-                tree.disableBody(true, true);
-                // Update player score
-            }, null, this);
-
-            // Display score
-            this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
-        },
-        update: function () {
-            let player = this.physics.world.children.list.find(child => child instanceof Phaser.Physics.Arcade.Sprite && child.texture.key === 'player');
-            let cursors = this.input.keyboard.createCursorKeys();
-
-            if (cursors.up.isDown) {
-                player.setVelocityY(-200);
-            } else if (cursors.down.isDown) {
-                player.setVelocityY(200);
-            } else {
-                player.setVelocityY(0);
-            }
-
-            if (cursors.left.isDown) {
-                player.setVelocityX(-200);
-            } else if (cursors.right.isDown) {
-                player.setVelocityX(200);
-            } else {
-                player.setVelocityX(0);
-            }
-        }
+      preload: preload,
+      create: create,
+      update: update
     }
-};
+  };
+  
+  let game = new Phaser.Game(config);
+  
+  function preload() {
+    // Load assets
+    this.load.image('background', 'assets/background.png');
+    this.load.image('tileset', 'assets/tileset.png');
+    this.load.spritesheet('character', 'assets/character.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.image('button', 'assets/button.png');
+    this.load.bitmapFont('pixelFont', 'assets/pixelFont.png', 'assets/pixelFont.xml');
+  }
+  
+  function create() {
+    // Create background image
+    const background = this.add.image(400, 300, 'background');
+    background.setScale(2);
+  
+    // Create map (replace with your actual map data)
+    const map = this.add.tilemap();
+    const tileset = map.addTilesetImage('tileset');
+    const mapData = [
+      [1, 1, 1, 2],
+      [2, 0, 0, 1],
+      [1, 0, 3, 1],
+      [1, 1, 1, 1],
+    ];
+    const layer = map.createLayer(0, tileset, 0, 0);
+    map.setCollision([1, 2, 3]);
+  
+    // Create character
+    const player = this.physics.add.sprite(50, 50, 'character');
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
+    player.setScale(2);
+  
+    // Create animations (replace with your own frames)
+    this.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('character', { start: 1, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('character', { start: 4, end: 6 }),
+      frameRate: 10,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'turn',
+      frames: [{ key: 'character', frame: 0 }],
+      frameRate: 20
+    });
+  
+    // Create trash items (replace with your own logic)
+    const trash = this.physics.add.group({
+      classType: Phaser.GameObjects.Sprite,
+      defaultKey: 'button',
+      setScale: 0.5
+    });
+    trash.create(100, 100);
+    trash.create(300, 200);
+  
+    // Create score text
+    const scoreText = this.add.bitmapText(10, 10, 'pixelFont', 'Score: 0', 16);
+  
+    // Create menu scene (optional)
+    const menuScene = this.scene.add('menu', {
+      create: () => {
+        const titleText = this.add.bitmapText(400, 300, 'pixelFont', 'Eco-Quest Adventure', 32);
+        titleText.setOrigin(0.5);
+        const playButton = this.add.image(400, 400, 'button');
+        playButton.setOrigin(0.5);
+        playButton.setInteractive();
+        playButton.on('pointerdown', () => {
+          this.scene.start('main');
+        });
+      }
+    });
+  
+    // Start menu scene (optional)
+    this.scene.start('menu');
+  
+    // Define keyboard controls
+    const cursors = this.input.keyboard.createCursorKeys();
+  
+    // Track collected trash and score
+    let collectedTrash = 0;
+  
+    // Update function
+    this.scoreText
 
-const game = new Phaser.Game(config);
+
+}
