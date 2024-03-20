@@ -1,16 +1,28 @@
-a {
-    color: blue; /* Change the link color */
-    background-color: lightblue; /* Change the background color of the link */
-    padding: 10px 20px; /* Add padding to the link */
-    border-radius: 10px; /* Rounded corners */
+body {
+    text-align: center;
+    background-color: aqua;
   }
   
-  /* Center the title */
+  header {
+    text-align: center;
+  }
+  
   h1 {
     text-align: center;
   }
   
-  /* Add a box around the game */
+  p {
+    text-align: center;
+  }
+  
+  a {
+    text-align: center;
+    color: blue;
+    padding: 10px 20px;
+    border-radius: 10px;
+  }
+  
   iframe {
-    border: 10px solid black;
+    display: block;
+    margin: 0 auto;
   }
