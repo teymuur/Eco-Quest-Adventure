@@ -4,18 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eco Adventure Quest</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
     <h1>Eco Quest Adventure</h1>
     <p>Made by Teymur &copy; 2024 </p>
-    <a href="https://scratch.mit.edu/projects/976336962/fullscreen" target="_blank">
-      The frame doesn't work click here
-    </a>
+    <a href="https://scratch.mit.edu/projects/976336962/fullscreen" target="_blank" class="default-link">The frame doesn't work click here</a>
   </header>
+  <div class="link-container">
+    <a href="https://images.nationalgeographic.com/wpf/media-content/richmedia/1/1143/project/dist/desktop.html" class="link">1</a>
+    <a href="https://scratch.mit.edu/projects/987654321/embed" class="link">2</a>
+    <a href="https://scratch.mit.edu/projects/012345678/embed" class="link">3</a>
+  </div>
   <iframe
+    id="iframe-container"
     src="https://scratch.mit.edu/projects/976336962/embed"
     allowtransparency="true"
     width="1000"
@@ -24,5 +27,6 @@
     scrolling="no"
     allowfullscreen
   ></iframe>
+  <script src="script.js"></script>
 </body>
 </html>
