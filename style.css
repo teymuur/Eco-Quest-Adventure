@@ -26,3 +26,11 @@ body {
     display: block;
     margin: 0 auto;
   }
+  .link {
+    color: black;
+    margin-right: 10px;
+  }
+  
+  .link-container a.active {
+    color: red;
+  }
