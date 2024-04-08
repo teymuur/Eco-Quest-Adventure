@@ -18,7 +18,7 @@ body {
   
   a {
     text-align: center;
-    color: blue;
+    color: #a7a8c9;
     padding: 10px 20px;
     border-radius: 10px;
   }
@@ -28,7 +28,7 @@ body {
     margin: 0 auto;
   }
   .link {
-    color: black;
+    
     margin-right: 10px;
   }
   
